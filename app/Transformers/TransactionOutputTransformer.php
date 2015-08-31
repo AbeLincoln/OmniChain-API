@@ -12,7 +12,7 @@ class TransactionOutputTransformer extends TransformerAbstract {
             'n' => $transactionOutput->n,
             'value' => $transactionOutput->value,
             'script' => $transactionOutput->script,
-            'address' => pubkeyHashToAddress($transactionOutput->address),
+            'address' => pubkeyHashToAddress($transactionOutput->address_hash),
             'spent' => isset($transactionOutput->spent)
         ];
     }

@@ -1,5 +1,4 @@
 <?php
-//TODO: DB Column Names should be clarified
 
 $app->group(['prefix' => 'v0/transactions', 'namespace' => 'App\Http\Controllers'], function($app) {
 

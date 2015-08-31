@@ -8,8 +8,4 @@ class Address extends Model {
 
     public $timestamps = false;
 
-    public function transactions() {
-        return $this->hasManyThrough('App\Models\Transaction', 'App\Models\TransactionOutput');
-    }
-
 }

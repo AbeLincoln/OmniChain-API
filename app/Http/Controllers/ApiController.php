@@ -18,8 +18,8 @@ class ApiController extends Controller {
         return $this;
     }
 
-    public function respond($data, $headers = []) {
-        return response()->json($data, $this->getStatusCode(), $headers);
+    public function respond($data) {
+        return response()->json($data, $this->getStatusCode());
     }
 
 }

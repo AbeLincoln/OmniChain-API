@@ -13,21 +13,21 @@ class BlockTransformer extends TransformerAbstract {
 
     public function transform(Block $block) {
         return [
-            'hash' => $block->hash,
-            'version' => $block->version,
-            'merkle' => $block->merkle,
-            'time' => $block->time,
-            'size' => $block->size,
-            'longest' => $block->longest,
-            'nonce' => $block->nonce,
-            'height' => $block->height,
-            'prev_block_hash' => $block->prev_block_hash,
-            'next_block_hash' => $block->next_block_hash,
-            'difficulty' => calculateDifficulty($block->nbits),
-            'work' => $block->work,
-            'sent' => $block->value_in,
-            'mining_fee' => 0,//TODO: Calculate mining fee
-            'block_reward' => $block->value_out - $block->value_in
+            'hash' => (string) $block->hash,
+            'version' => (int) $block->version,
+            'merkle' => (string) $block->merkle,
+            'time' => (int) $block->time,
+            'size' => (int) $block->size,
+            'main_chain' => (boolean) $block->longest,
+            'nonce' => (int) $block->nonce,
+            'height' => (int) $block->height,
+            'prev_block_hash' => (string) $block->prev_block_hash,
+            'next_block_hash' => (string) $block->next_block_hash,
+            'difficulty' => (double) calculateDifficulty($block->nbits),
+            'work' => (string) $block->work,
+            'sent' => (int) $block->value_in,
+            'mining_fee' => (int) $block->miner_reward - ($block->value_out - $block->value_in),
+            'block_reward' => (int) $block->value_out - $block->value_in
         ];
     }
 

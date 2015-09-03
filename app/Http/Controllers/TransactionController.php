@@ -12,9 +12,8 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class TransactionController extends ApiController {
 
-    //TODO: Main chain only list option
     public function index(Manager $fractal, TransactionTransformer $transactionTransformer) {
-        $transactions = Transaction::paginate(10);
+        $transactions = Transaction::orderBy('time', 'desc')->paginate(10);
 
         $collection = new Collection($transactions, $transactionTransformer);
 
@@ -25,7 +24,6 @@ class TransactionController extends ApiController {
         return $this->respond($data);
     }
 
-    //TODO: Main chain over others
     public function show($hash, Manager $fractal, TransactionTransformer $transactionTransformer) {
         $fractal->parseIncludes('inputs.prev_output,outputs');
 

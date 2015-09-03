@@ -7,14 +7,14 @@ use League\Fractal\TransformerAbstract;
 
 class TransactionInputTransformer extends TransformerAbstract {
 
-    protected $availableIncludes = [
+    protected $defaultIncludes = [
         'prev_output'
     ];
 
     public function transform(TransactionInput $transactionInput) {
         return [
-            'n' => $transactionInput->n,
-            'script' => $transactionInput->script
+            'n' => (int) $transactionInput->n,
+            'script' => (string) $transactionInput->script
         ];
     }
 

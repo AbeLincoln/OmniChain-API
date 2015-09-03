@@ -20,4 +20,18 @@ $app->group(['prefix' => 'v0/addresses', 'namespace' => 'App\Http\Controllers'],
 
     $app->get('/{addr}', 'AddressController@show');
 
+    $app->get('/{addr}/validate', 'AddressController@_validate');
+
+});
+
+$app->group(['prefix' => 'v0/info', 'namespace' => 'App\Http\Controllers'], function($app) {
+
+    $app->get('/', 'InfoController@index');
+
+});
+
+$app->group(['prefix' => 'v0/verifymessage', 'namespace' => 'App\Http\Controllers'], function($app) {
+
+    $app->get('/', 'VerifyMessageController@index');
+
 });

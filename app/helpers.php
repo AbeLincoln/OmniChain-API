@@ -46,3 +46,15 @@ function calculateTarget($nBits) {
 function calculateDifficulty($nBits) {
     return targetToDifficulty(calculateTarget($nBits));
 }
+
+function calculateReward($height) {
+    return 6684999999 * pow(2, floor($height / 100010) * -1);
+}
+
+function getOption($name) {
+    return DB::table('options')->where('name', $name)->pluck('value');
+}
+
+function setOption($name, $value) {
+    DB::table('options')->where('name', $name)->update(['value' => $value]);
+}

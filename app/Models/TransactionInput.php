@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class TransactionInput extends Model {
 
     public $timestamps = false;
+    protected $connection = 'abe';
 
     public function output() {
         return $this->hasOne('App\Models\TransactionOutput');

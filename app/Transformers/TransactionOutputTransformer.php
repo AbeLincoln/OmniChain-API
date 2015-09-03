@@ -9,11 +9,11 @@ class TransactionOutputTransformer extends TransformerAbstract {
 
     public function transform(TransactionOutput $transactionOutput) {
         return [
-            'n' => $transactionOutput->n,
-            'value' => $transactionOutput->value,
-            'script' => $transactionOutput->script,
-            'address' => pubkeyHashToAddress($transactionOutput->address_hash),
-            'spent' => isset($transactionOutput->spent)
+            'n' => (int) $transactionOutput->n,
+            'value' => (int) $transactionOutput->value,
+            'script' => (string) $transactionOutput->script,
+            'address' => (string) pubkeyHashToAddress($transactionOutput->address_hash),
+            'spent' => (boolean) isset($transactionOutput->spent)
         ];
     }
 

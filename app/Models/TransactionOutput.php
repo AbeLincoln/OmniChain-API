@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class TransactionOutput extends Model {
 
     public $timestamps = false;
+    protected $connection = 'abe';
 
     public function input() {
         return $this->belongsTo('App\Models\TransactionInput', 'transaction_input_id');

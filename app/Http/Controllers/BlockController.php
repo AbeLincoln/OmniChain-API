@@ -12,9 +12,8 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class BlockController extends ApiController {
 
-    //TODO: Main chain only list option
     public function index(Manager $fractal, BlockTransformer $blockTransformer) {
-        $blocks = Block::paginate(10);
+        $blocks = Block::orderBy('time', 'desc')->paginate(10);
 
         $collection = new Collection($blocks, $blockTransformer);
 
@@ -25,15 +24,20 @@ class BlockController extends ApiController {
         return $this->respond($data);
     }
 
-    //TODO: Main chain over others
     public function show($hash, Manager $fractal, BlockTransformer $blockTransformer) {
         $fractal->parseIncludes('transactions.inputs,transactions.outputs');
 
         $block = Block::where('hash', $hash)->get()->first();
 
         if (is_null($block)) {
-            return $this->setStatusCode(404)->respond(['error' => 'Block not found']);
+            $block = is_numeric($hash) ? Block::where('height', $hash)->get()->first() : null;
+
+            if (is_null($block)) {
+                return $this->setStatusCode(404)->respond(['error' => 'Block not found']);
+            }
         }
+
+        $block['miner_reward'] = $block->transactions[0]->outputs[0]->value;
 
         $item = new Item($block, $blockTransformer);
 

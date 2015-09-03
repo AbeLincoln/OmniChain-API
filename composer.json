@@ -8,7 +8,8 @@
         "laravel/lumen-framework": "5.1.*",
         "vlucas/phpdotenv": "~1.0",
         "doctorblue/baseconvert": "*",
-        "league/fractal": ">=0.12.0"
+        "league/fractal": ">=0.12.0",
+        "nbobtc/bitcoind-php": "~2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.0",

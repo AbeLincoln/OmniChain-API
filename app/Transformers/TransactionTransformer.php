@@ -14,13 +14,13 @@ class TransactionTransformer extends TransformerAbstract {
 
     public function transform(Transaction $transaction) {
         return [
-            'hash' => $transaction->hash,
-            'version' => $transaction->version,
-            'lock_time' => $transaction->lock_time,
-            'size' => $transaction->size,
-            'block_hash' => $transaction->block_hash,
-            'time' => $transaction->time,
-            'main_chain' => $transaction->longest == 1
+            'hash' => (string) $transaction->hash,
+            'version' => (int) $transaction->version,
+            'lock_time' => (int) $transaction->lock_time,
+            'size' => (int) $transaction->size,
+            'block_hash' => (string) $transaction->block_hash,
+            'time' => (int) $transaction->time,
+            'main_chain' => (boolean) $transaction->longest
         ];
     }
 

@@ -14,13 +14,13 @@ class AddressController extends ApiController {
 
     public function show($addr, Manager $fractal, AddressTransformer $addressTransformer) {
         if (!isAddress($addr)) {
-            return $this->setStatusCode(404)->respond(['error' => 'Address not found']);
+            return $this->setStatusCode(404)->respond(['error' => 'invalid-address']);
         }
 
         $address = Address::where('address_hash', addressToPubkeyHash($addr))->get()->first();
 
         if (is_null($address)) {
-            return $this->setStatusCode(404)->respond(['error' => 'Address not seen on network']);
+            return $this->setStatusCode(404)->respond(['error' => 'not-on-network']);
         }
 
         $transactions = array();
@@ -77,7 +77,7 @@ class AddressController extends ApiController {
     }
 
     public function _validate($addr, Manager $fractal, RawTransformer $rawTransformer) {
-        $item = new Item(['valid' => isAddress($addr)], $rawTransformer);
+        $item = new Item(['valid' => (boolean) isAddress($addr)], $rawTransformer);
 
         $data = $fractal->setSerializer(new ArraySerializer())->createData($item)->toArray();
 

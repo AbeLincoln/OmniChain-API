@@ -33,7 +33,7 @@ class BlockController extends ApiController {
             $block = is_numeric($hash) ? Block::where('height', $hash)->get()->first() : null;
 
             if (is_null($block)) {
-                return $this->setStatusCode(404)->respond(['error' => 'Block not found']);
+                return $this->setStatusCode(404)->respond(['error' => 'invalid-block']);
             }
         }
 

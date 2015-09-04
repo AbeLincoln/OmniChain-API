@@ -23,11 +23,12 @@ $app->group(['prefix' => 'v0', 'namespace' => 'App\Http\Controllers'], function(
     $app->post('wallet/users/register', 'WalletController@register');
     $app->get('wallet/users/login', 'WalletController@login');
 
-    $app->group(['prefix' => 'v0', 'namespace' => 'App\Http\Controllers'], function($app) {
+    $app->group(['prefix' => 'v0', 'namespace' => 'App\Http\Controllers', 'middleware' => 'auth'], function($app) {
 
         $app->get('wallet/users/{id}', 'WalletController@show');
         $app->post('wallet/users/{id}/generate-address', 'WalletController@generateAddress');
         $app->post('wallet/users/{id}/send', 'WalletController@send');
+        $app->get('wallet/users/{id}/send', 'WalletController@send');//TODO:
         $app->post('wallet/users/{id}/import-address', 'WalletController@importAddress');
         $app->post('wallet/users/{id}/sign-message', 'WalletController@signMessage');
         $app->put('wallet/users/{id}', 'WalletController@update');

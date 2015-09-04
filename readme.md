@@ -1,3 +1,3 @@
-## OmniChain API 0.1
+## OmniChain API 0.1.0
 
-A RESTful API for Omnicoin
+A RESTful API for OmniCha.in

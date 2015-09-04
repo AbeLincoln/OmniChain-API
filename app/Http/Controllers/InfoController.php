@@ -13,7 +13,7 @@ use App\Serializers\ArraySerializer;
 class InfoController extends ApiController {
 
     public function index(Manager $fractal, InfoTransformer $infoTransformer) {
-        $client = new Client('http://' . $_ENV['WALLET_ABE_USERNAME'] . ':' . $_ENV['WALLET_ABE_PASSWORD'] . '@' . $_ENV['WALLET_ABE_HOST'] . ':' . $_ENV['WALLET_ABE_PORT']);
+        $client = new Client('http://' . env('WALLET_ABE_USERNAME', '') . ':' . env('WALLET_ABE_PASSWORD', '') . '@' . env('WALLET_ABE_HOST', '') . ':' . env('WALLET_ABE_PORT', ''));
 
         $miningInfo = json_decode($client->sendCommand(new Command('getmininginfo'))->getBody()->getContents())->result;
 

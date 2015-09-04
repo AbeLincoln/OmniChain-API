@@ -2,6 +2,7 @@
 
 use Exception;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\Debug\Exception\FlattenException;
 
 class Handler extends ExceptionHandler {
 
@@ -36,6 +37,14 @@ class Handler extends ExceptionHandler {
      */
     public function render($request, Exception $e)
     {
+        if (!env('APP_DEBUG', true)) {
+            if (!$e instanceof FlattenException) {
+                $e = FlattenException::create($e);
+            }
+
+            return response()->json(['error' => $e->getStatusCode() == 404 ? 'Method not found' : 'Unknown error occurred'], $e->getStatusCode());
+        }
+
         return parent::render($request, $e);
     }
 

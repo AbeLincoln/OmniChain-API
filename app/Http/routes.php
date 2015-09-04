@@ -1,37 +1,37 @@
 <?php
 
-$app->group(['prefix' => 'v0/transactions', 'namespace' => 'App\Http\Controllers'], function($app) {
+$app->group(['prefix' => 'v0', 'namespace' => 'App\Http\Controllers'], function($app) {
 
-    $app->get('/', 'TransactionController@index');
+    $app->get('transactions', 'TransactionController@index');
+    $app->get('transactions/{hash}', 'TransactionController@show');
 
-    $app->get('/{hash}', 'TransactionController@show');
 
-});
+    $app->get('blocks', 'BlockController@index');
+    $app->get('blocks/{hash}', 'BlockController@show');
 
-$app->group(['prefix' => 'v0/blocks', 'namespace' => 'App\Http\Controllers'], function($app) {
 
-    $app->get('/', 'BlockController@index');
+    $app->get('addresses/{addr}', 'AddressController@show');
+    $app->get('addresses/{addr}/validate', 'AddressController@_validate');
 
-    $app->get('/{hash}', 'BlockController@show');
 
-});
+    $app->get('info', 'InfoController@index');
 
-$app->group(['prefix' => 'v0/addresses', 'namespace' => 'App\Http\Controllers'], function($app) {
 
-    $app->get('/{addr}', 'AddressController@show');
+    $app->get('verify-message', 'VerifyMessageController@index');
 
-    $app->get('/{addr}/validate', 'AddressController@_validate');
 
-});
+    $app->post('wallet/users/register', 'WalletController@register');
+    $app->get('wallet/users/login', 'WalletController@login');
 
-$app->group(['prefix' => 'v0/info', 'namespace' => 'App\Http\Controllers'], function($app) {
+    $app->group(['prefix' => 'v0', 'namespace' => 'App\Http\Controllers'], function($app) {
 
-    $app->get('/', 'InfoController@index');
+        $app->get('wallet/users/{id}', 'WalletController@show');
+        $app->post('wallet/users/{id}/generate-address', 'WalletController@generateAddress');
+        $app->post('wallet/users/{id}/send', 'WalletController@send');
+        $app->post('wallet/users/{id}/import-address', 'WalletController@importAddress');
+        $app->post('wallet/users/{id}/sign-message', 'WalletController@signMessage');
+        $app->put('wallet/users/{id}', 'WalletController@update');
 
-});
-
-$app->group(['prefix' => 'v0/verifymessage', 'namespace' => 'App\Http\Controllers'], function($app) {
-
-    $app->get('/', 'VerifyMessageController@index');
+    });
 
 });

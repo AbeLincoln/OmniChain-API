@@ -3,19 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Block;
-use Nbobtc\Command\Command;
-use Nbobtc\Http\Client;
 use App\Transformers\InfoTransformer;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Item;
 use App\Serializers\ArraySerializer;
 
-class InfoController extends ApiController {
+class InfoController extends DaemonController {
 
     public function index(Manager $fractal, InfoTransformer $infoTransformer) {
-        $client = new Client('http://' . env('OMCD_ABE_USERNAME', '') . ':' . env('OMCD_ABE_PASSWORD', '') . '@' . env('OMCD_ABE_HOST', '') . ':' . env('OMCD_ABE_PORT', ''));
-
-        $miningInfo = json_decode($client->sendCommand(new Command('getmininginfo'))->getBody()->getContents())->result;
+        $miningInfo = sendRpcCommand($this->client, 'getmininginfo');
 
         $lastBlock = Block::orderBy('height', 'desc')->first();
 

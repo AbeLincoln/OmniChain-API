@@ -1,5 +1,7 @@
 <?php
 
+use Nbobtc\Command\Command;
+use Nbobtc\Http\Client;
 use \DoctorBlue\BaseConvert;
 
 function isAddress($term) {
@@ -57,4 +59,23 @@ function getOption($name) {
 
 function setOption($name, $value) {
     DB::table('options')->where('name', $name)->update(['value' => $value]);
+}
+
+function sendRpcCommand(Client $client, $command, $arguments = []) {
+    return json_decode($client->sendCommand(new Command($command, $arguments))->getBody()->getContents())->result;
+}
+
+function getAccountUnspent(Client $client, $userId) {
+    $accountAddresses = sendRpcCommand($client, 'getaddressesbyaccount', [$userId]);
+    $accountUnspent = [];
+
+    if (!empty($accountAddresses)) {
+        $unspents = sendRpcCommand($client, 'listunspent', [0, 9999999]);
+
+        foreach ($unspents as $unspent) {
+
+        }
+    }
+
+    return $accountUnspent;
 }

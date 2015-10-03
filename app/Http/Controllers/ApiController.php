@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Response as IlluminateResponse;
-
 class ApiController extends Controller {
 
-    protected $statusCode = IlluminateResponse::HTTP_OK;
+    protected $statusCode = 200;
 
     public function getStatusCode() {
         return $this->statusCode;

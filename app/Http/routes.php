@@ -20,18 +20,17 @@ $app->group(['prefix' => 'v0', 'namespace' => 'App\Http\Controllers'], function(
     $app->get('verify-message', 'VerifyMessageController@index');
 
 
-    $app->post('wallet/users/register', 'WalletController@register');
-    $app->get('wallet/users/login', 'WalletController@login');
+    $app->post('wallet/users/register', 'AuthController@register');
+    $app->get('wallet/users/login', 'AuthController@login');
 
     $app->group(['prefix' => 'v0', 'namespace' => 'App\Http\Controllers', 'middleware' => 'auth'], function($app) {
 
-        $app->get('wallet/users/{id}', 'WalletController@show');
-        $app->post('wallet/users/{id}/generate-address', 'WalletController@generateAddress');
-        $app->post('wallet/users/{id}/send', 'WalletController@send');
-        $app->get('wallet/users/{id}/send', 'WalletController@send');//TODO:
-        $app->post('wallet/users/{id}/import-address', 'WalletController@importAddress');
-        $app->post('wallet/users/{id}/sign-message', 'WalletController@signMessage');
-        $app->put('wallet/users/{id}', 'WalletController@update');
+        $app->get('wallet/users/{id}', 'UserController@show');
+        $app->post('wallet/users/{id}/generate-address', 'UserController@generateAddress');
+        $app->post('wallet/users/{id}/send', 'UserController@send');
+        $app->post('wallet/users/{id}/import-address', 'UserController@importAddress');
+        $app->post('wallet/users/{id}/sign-message', 'UserController@signMessage');
+        $app->put('wallet/users/{id}', 'UserController@update');
 
     });
 

@@ -15,11 +15,11 @@ class AddressTransformer extends TransformerAbstract {
         return [
             'address' => (string) pubkeyHashToAddress($address->address_hash),
             'pubkey' => (string) $address->pubkey,
-            'pubkey_hash' => (string) $address->address_hash,
-            'transactions_in' => (int) $address->txin_count,
-            'transactions_out' => (int) $address->txout_count,
-            'transactions_in_value' => (int) $address->txin_value,
-            'transactions_out_value' => (int) $address->txout_value,
+            'pubkey-hash' => (string) $address->address_hash,
+            'transactions-in' => (int) $address->txin_count,
+            'transactions-out' => (int) $address->txout_count,
+            'transactions-in-value' => (int) $address->txin_value,
+            'transactions-out-value' => (int) $address->txout_value,
             'balance' => (int) $address->txin_value - $address->txout_value
         ];
     }

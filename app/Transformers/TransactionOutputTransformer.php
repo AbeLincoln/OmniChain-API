@@ -3,7 +3,6 @@
 namespace App\Transformers;
 
 use App\Models\TransactionOutput;
-use League\Fractal\TransformerAbstract;
 
 class TransactionOutputTransformer extends TransformerAbstract {
 

@@ -3,7 +3,6 @@
 namespace App\Transformers;
 
 use App\Models\Transaction;
-use League\Fractal\TransformerAbstract;
 
 class TransactionTransformer extends TransformerAbstract {
 
@@ -16,11 +15,11 @@ class TransactionTransformer extends TransformerAbstract {
         return [
             'hash' => (string) $transaction->hash,
             'version' => (int) $transaction->version,
-            'lock_time' => (int) $transaction->lock_time,
+            'lock-time' => (int) $transaction->lock_time,
             'size' => (int) $transaction->size,
-            'block_hash' => (string) $transaction->block_hash,
+            'block-hash' => (string) $transaction->block_hash,
             'time' => (int) $transaction->time,
-            'main_chain' => (boolean) $transaction->longest
+            'main-chain' => (boolean) $transaction->longest
         ];
     }
 

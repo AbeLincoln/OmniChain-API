@@ -15,6 +15,10 @@ class BlockController extends ApiController {
     public function index(Manager $fractal, BlockTransformer $blockTransformer) {
         $blocks = Block::orderBy('time', 'desc')->paginate(10);
 
+        foreach ($blocks as $block) {
+            $block['miner_reward'] = $block->transactions[0]->outputs[0]->value;
+        }
+
         $collection = new Collection($blocks, $blockTransformer);
 
         $collection->setPaginator(new IlluminatePaginatorAdapter($blocks));
@@ -33,7 +37,7 @@ class BlockController extends ApiController {
             $block = is_numeric($hash) ? Block::where('height', $hash)->get()->first() : null;
 
             if (is_null($block)) {
-                return $this->setStatusCode(404)->respond(['error' => 'invalid-block']);
+                return $this->setStatusCode(404)->respond(['errors' => ['invalid-block']]);
             }
         }
 

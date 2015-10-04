@@ -16,7 +16,7 @@ class BlockController extends ApiController {
         $blocks = Block::orderBy('time', 'desc')->paginate(10);
 
         foreach ($blocks as $block) {
-            $block['miner_reward'] = $block->transactions[0]->outputs[0]->value;
+            $block->miner_reward = $block->transactions[0]->outputs[0]->value;
         }
 
         $collection = new Collection($blocks, $blockTransformer);
@@ -41,7 +41,7 @@ class BlockController extends ApiController {
             }
         }
 
-        $block['miner_reward'] = $block->transactions[0]->outputs[0]->value;
+        $block->miner_reward = $block->transactions[0]->outputs[0]->value;
 
         $item = new Item($block, $blockTransformer);
 

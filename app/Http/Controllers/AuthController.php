@@ -12,7 +12,7 @@ use App\Serializers\ArraySerializer;
 
 class AuthController extends ApiController {
 
-    public function login(Request $request, UserTransformer $userTransformer, Manager $fractal) {
+    public function login(Request $request, Manager $fractal, UserTransformer $userTransformer) {
         $validator = \Validator::make($request->all(), [
             'username' => 'required',
             'password' => 'required'
@@ -35,29 +35,29 @@ class AuthController extends ApiController {
         if (count($ipCheck) > 15) {
             Login::create(['time' => date('Y-m-d H:i:s'), 'ip' => $request->ip(), 'valid' => false]);
 
-            return response()->json(['errors' => ['ip-banned']], 401);
+            return $this->setStatusCode(403)->respond(['errors' => ['ip-banned']]);
         }
 
         $user = User::where(['username' => $request->get('username')])->orWhere(['email' => $request->get('username')])->first();
 
         if (is_null($user)) {
-            return $this->setStatusCode(401)->respond(['errors' => ['user-not-found']]);
+            return $this->setStatusCode(404)->respond(['errors' => ['user-not-found']]);
         }
 
         $userCheck = Login::where(['user_id' => $user->id, 'valid' => false])->where('time', '>', time() - (60 * 15))->get();
 
         if (count($userCheck) > 15) {
-            return $this->setStatusCode(401)->respond(['errors' => ['user-locked']]);
+            return $this->setStatusCode(403)->respond(['errors' => ['user-locked']]);
         }
 
         if (!\Hash::check($request->get('password'), $user->password)) {
             Login::create(['time' => date('Y-m-d H:i:s'), 'ip' => $request->ip(), 'user_id' => $user->id, 'valid' => false]);
 
-            return $this->setStatusCode(401)->respond(['errors' => ['invalid-password']]);
+            return $this->setStatusCode(403)->respond(['errors' => ['invalid-password']]);
         }
 
         $user->session = hash('sha512', uniqid(mt_rand(1, mt_getrandmax()), true));
-        $user->session_create_time = date('Y-m-d H:i:s');
+        $user->session_expire_time = date('Y-m-d H:i:s', time() + 60 * 60);
 
         $user->update();
 
@@ -70,7 +70,7 @@ class AuthController extends ApiController {
         return $this->respond($data);
     }
 
-    public function register(Request $request, UserTransformer $userTransformer, Manager $fractal) {
+    public function register(Request $request, Manager $fractal, UserTransformer $userTransformer) {
         $validator = \Validator::make($request->all(), [
             'username' => 'required|unique:users|min:3|max:30',
             'password' => 'required',
@@ -80,7 +80,7 @@ class AuthController extends ApiController {
             'unique' => ':attribute-taken',
             'min' => ':attribute-too-short',
             'max' => ':attribute-too-long',
-            'email' => 'invalid-email'
+            'email' => 'invalid-:attribute'
         ]);
 
         if ($validator->fails()) {
@@ -99,7 +99,7 @@ class AuthController extends ApiController {
         $user->email = $request->get('email') ?: '';
         $user->password = \Hash::make($request->get('password'));
         $user->session = hash('sha512', uniqid(mt_rand(1, mt_getrandmax()), true));
-        $user->session_create_time = date('Y-m-d H:i:s');
+        $user->session_expire_time = date('Y-m-d H:i:s', time() + 60 * 60);
 
         $user->save();
 

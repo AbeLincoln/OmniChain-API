@@ -8,10 +8,12 @@ use App\Transformers\AddressTransformer;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Item;
 use App\Serializers\ArraySerializer;
+use Illuminate\Http\Request;
 
-class AddressController extends ApiController {
+class AddressController extends DaemonController {
 
     public function show($addr, Manager $fractal, AddressTransformer $addressTransformer) {
+        $fractal->parseIncludes('transactions.inputs,transactions.outputs');
         if (!isAddress($addr)) {
             return $this->setStatusCode(404)->respond(['errors' => ['invalid-address']]);
         }
@@ -62,11 +64,11 @@ class AddressController extends ApiController {
             return $a['time'] < $b['time'];
         });
 
-        $address['transactions'] = $transactions;
-        $address['txin_count'] = $txinCount;
-        $address['txin_value'] = $txinValue;
-        $address['txout_count'] = $txoutCount;
-        $address['txout_value'] = $txoutValue;
+        $address->transactions = $transactions;
+        $address->txin_count = $txinCount;
+        $address->txin_value = $txinValue;
+        $address->txout_count = $txoutCount;
+        $address->txout_value = $txoutValue;
 
         $item = new Item($address, $addressTransformer);
 
@@ -75,8 +77,18 @@ class AddressController extends ApiController {
         return $this->respond($data);
     }
 
-    public function _validate($addr) {
+    public function val($addr) {
         return $this->respond(['valid' => (boolean) isAddress($addr)]);
+    }
+
+    public function validateMessage(Request $request) {
+        $verifyMessage = sendRpcCommand($this->client, 'verifymessage', [$request->input('address', ''), $request->input('signature', ''), $request->input('message', '')]);
+
+        if ($verifyMessage === false) {
+            return $this->setStatusCode(500)->respond(['errors' => ['unknown-error']]);
+        }
+
+        return $this->respond(['verified' => (boolean) $verifyMessage->result]);
     }
 
 }

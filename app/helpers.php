@@ -62,7 +62,11 @@ function setOption($name, $value) {
 }
 
 function sendRpcCommand(Client $client, $command, $arguments = []) {
-    return json_decode($client->sendCommand(new Command($command, $arguments))->getBody()->getContents())->result;
+    try {
+        return json_decode($client->sendCommand(new Command($command, $arguments))->getBody()->getContents());
+    } catch (Exception $e) {
+        return false;
+    }
 }
 
 function getAccountUnspent(Client $client, $userId) {

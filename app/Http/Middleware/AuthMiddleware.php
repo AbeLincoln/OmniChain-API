@@ -14,19 +14,19 @@ class AuthMiddleware {
         if (count($ipCheck) > 15) {
             Login::create(['time' => date('Y-m-d H:i:s'), 'ip' => $request->ip(), 'valid' => false]);
 
-            return response()->json(['errors' => ['ip-banned']], 401);
+            return response()->json(['errors' => ['ip-banned']], 403);
         }
 
         $user = User::find($request->route()[2]['id']);
 
         if (is_null($user)) {
-            return response()->json(['errors' => ['user-not-found']], 401);
+            return response()->json(['errors' => ['user-not-found']], 404);
         }
 
         $userCheck = Login::where(['user_id' => $user->id, 'valid' => false])->where('time', '>', time() - (60 * 15))->get();
 
         if (count($userCheck) > 15) {
-            return response()->json(['errors' => ['user-locked']], 401);
+            return response()->json(['errors' => ['user-locked']], 403);
         }
 
         if ($request->has('session')) {
@@ -35,13 +35,13 @@ class AuthMiddleware {
             if ($user->session != $session) {
                 Login::create(['time' => date('Y-m-d H:i:s'), 'ip' => $request->ip(), 'user_id' => $user->id, 'valid' => false]);
 
-                return response()->json(['errors' => ['invalid-session']], 401);
+                return response()->json(['errors' => ['invalid-session']], 403);
             }
 
-            if (strtotime($user->session_create_time) < time() - (60 * 60)) {
+            if (strtotime($user->session_expire_time) < time()) {
                 Login::create(['time' => date('Y-m-d H:i:s'), 'ip' => $request->ip(), 'user_id' => $user->id, 'valid' => false]);
 
-                return response()->json(['errors' => ['session-expired']], 401);
+                return response()->json(['errors' => ['session-expired']], 403);
             }
         } else if ($request->has('api-key')) {
             $key = $request->input('api-key');
@@ -57,6 +57,7 @@ class AuthMiddleware {
                         if ($request->ip() == $ip->ip) {
                             $goodIp = true;
 
+                            //TODO: Check if key has ability to perform action / access route
                             break 2;
                         }
                     }
@@ -66,19 +67,19 @@ class AuthMiddleware {
             if (!$goodKey) {
                 Login::create(['time' => date('Y-m-d H:i:s'), 'ip' => $request->ip(), 'user_id' => $user->id, 'valid' => false]);
 
-                return response()->json(['errors' => ['invalid-api-key']], 401);
+                return response()->json(['errors' => ['invalid-api-key']], 403);
             }
 
             if (!$goodIp) {
                 Login::create(['time' => date('Y-m-d H:i:s'), 'ip' => $request->ip(), 'user_id' => $user->id, 'valid' => false]);
 
-                return response()->json(['errors' => ['invalid-ip']], 401);
+                return response()->json(['errors' => ['invalid-ip']], 403);
             }
 
             Login::create(['time' => date('Y-m-d H:i:s'), 'ip' => $request->ip(), 'user_id' => $user->id, 'valid' => true]);
 
         } else {
-            return response()->json(['errors' => ['no-authentication-provided']], 400);
+            return response()->json(['errors' => ['no-authentication-provided']], 401);
         }
 
         $request->setUserResolver(function() use ($user) {

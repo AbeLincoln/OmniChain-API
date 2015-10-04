@@ -30,7 +30,7 @@ class TransactionController extends ApiController {
         $transaction = Transaction::where('hash', $hash)->get()->first();
 
         if (is_null($transaction)) {
-            return $this->setStatusCode(404)->respond(['errors' => ['invalid-transactions']]);
+            return $this->setStatusCode(404)->respond(['errors' => ['invalid-transaction']]);
         }
 
         $item = new Item($transaction, $transactionTransformer);

@@ -11,10 +11,6 @@ use App\Transformers\UserTransformer;
 class UserController extends DaemonController {
 
     public function show(Manager $fractal, Request $request, UserTransformer $userTransformer) {
-        $fractal->parseIncludes('api-keys');
-
-        //$accountAddresses = sendRpcCommand($this->client, 'getaddressesbyaccount', [$request->user()->id]);
-
         $user = $request->user();
 
         $item = new Item($user, $userTransformer);
@@ -24,16 +20,11 @@ class UserController extends DaemonController {
         return $this->respond($data);
     }
 
-    public function generateAddress() {
-
-    }
-
-    public function send(Manager $fractal, Request $request) {
+    public function update(Request $request) {
         $validator = \Validator::make($request->all(), [
-            'username' => 'required',
-            'password' => 'required'
+            'email' => 'email'
         ], [
-            'required' => 'no-:attribute-provided'
+            'email' => 'invalid-:attribute'
         ]);
 
         if ($validator->fails()) {
@@ -46,29 +37,13 @@ class UserController extends DaemonController {
             return $this->setStatusCode(400)->respond(['errors' => $errors]);
         }
 
-        if (!$request->has('amount') || !is_numeric($amount = $request->input('amount')) || $amount <= 0) {
-            return $this->setStatusCode(400)->respond(['errors' => ['invalid-amount']]);
+        $user = $request->user();
+
+        if ($request->has('email')) {
+            $user->email = $request->get('email');
         }
 
-        if (!$request->has('address') || !isAddress($address = $request->input('address'))) {
-            return $this->setStatusCode(400)->respond(['errors' => ['invalid-address']]);
-        }
-
-        $accountAddresses = sendRpcCommand($this->client, 'getaddressesbyaccount', [$request->user()->id]);
-
-        var_dump($accountAddresses);
-    }
-
-    public function importAddress() {
-
-    }
-
-    public function signMessage() {
-
-    }
-
-    public function update() {
-
+        $user->update();
     }
 
 }

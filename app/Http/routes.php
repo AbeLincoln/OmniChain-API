@@ -1,96 +1,79 @@
 <?php
+//TODO: Unit testing
+$app->group(['prefix' => 'v0/', 'namespace' => 'App\Http\Controllers\v0'], function ($app) {
 
-$app->group(['prefix' => 'v0/', 'namespace' => 'App\Http\Controllers'], function($app) {
+    $app->get('',   'InfoController@index');
 
-    $app->get('', 'InfoController@index');
+    $app->group(['prefix' => 'v0/addresses/{addr}', 'namespace' => 'App\Http\Controllers\v0\addresses'], function ($app) {
 
-    $app->group(['prefix' => 'v0/addresses/{addr}', 'namespace' => 'App\Http\Controllers'], function($app) {
-
-        $app->get('', 'AddressController@show');
-        $app->get('validate', 'AddressController@val');
-        $app->get('validate-message', 'AddressController@validateMessage');
-
-    });
-
-    $app->group(['prefix' => 'v0/blocks', 'namespace' => 'App\Http\Controllers'], function($app) {
-
-        $app->get('', 'BlockController@index');
-
-        $app->group(['prefix' => 'v0/blocks/{hash}', 'namespace' => 'App\Http\Controllers'], function($app) {
-
-            $app->get('', 'BlockController@show');
-
-        });
+        $app->get(  '',                   'AddressController@show');
+        $app->get(  'validate',           'AddressController@val');
+        $app->get(  'validate-message',   'AddressController@validateMessage');
 
     });
 
-    $app->group(['prefix' => 'v0/transactions', 'namespace' => 'App\Http\Controllers'], function($app) {
+    $app->group(['prefix' => 'v0/blocks', 'namespace' => 'App\Http\Controllers\v0\blocks'], function ($app) {
 
-        $app->get('', 'TransactionController@index');
-
-        $app->group(['prefix' => 'v0/transactions/{hash}', 'namespace' => 'App\Http\Controllers'], function($app) {
-
-            $app->get('', 'TransactionController@show');
-
-        });
+        $app->get(  '',           'BlockController@index');
+        $app->get(  '{hash}',     'BlockController@show');
 
     });
 
-    $app->group(['prefix' => 'v0/wallet/users', 'namespace' => 'App\Http\Controllers'], function($app) {
+    $app->group(['prefix' => 'v0/transactions', 'namespace' => 'App\Http\Controllers\v0\transactions'], function ($app) {
 
-        $app->post('register', 'AuthController@register');
-        $app->get('login', 'AuthController@login');
+        $app->get(  '',           'TransactionController@index');
+        $app->get(  '{hash}',     'TransactionController@show');
 
-        $app->group(['prefix' => 'v0/wallet/users/{id}', 'namespace' => 'App\Http\Controllers', 'middleware' => 'auth'], function($app) {
+    });
 
-            $app->get('', 'UserController@show');
-            $app->put('', 'UserController@update');
-            $app->get('balance', 'UserController@balance');//TODO: Resource or action...hmm
+    $app->group(['prefix' => 'v0/users', 'namespace' => 'App\Http\Controllers\v0\users'], function ($app) {
 
-            $app->group(['prefix' => 'v0/wallet/users/{id}/addresses', 'namespace' => 'App\Http\Controllers', 'middleware' => 'auth'], function($app) {
+        $app->post( 'register',     'AuthController@register');
+        $app->get(  'login',        'AuthController@login');
 
-                $app->get('', 'UserAddressController@index');
-                $app->post('', 'UserAddressController@create');//generate & import
+        $app->group(['prefix' => 'v0/users/{id}', 'namespace' => 'App\Http\Controllers\v0\users', 'middleware' => 'auth'], function ($app) {
 
-                $app->group(['prefix' => 'v0/wallet/users/{id}/addresses/{addr}', 'namespace' => 'App\Http\Controllers', 'middleware' => 'auth'], function($app) {
+            $app->get(  '',       'UserController@show');
+            $app->put(  '',       'UserController@update');
 
-                    $app->delete('', 'UserAddressController@delete');
-                    $app->get('sign-message', 'UserAddressController@signMessage');
+            $app->group(['prefix' => 'v0/users/{id}/api-keys', 'namespace' => 'App\Http\Controllers\v0\users\apikeys', 'middleware' => 'auth'], function ($app) {
+
+                $app->get(      '',         'ApiKeyController@index');
+                $app->post(     '',         'ApiKeyController@create');
+                $app->get(      '{aid}',    'ApiKeyController@show');
+                $app->put(      '{aid}',    'ApiKeyController@update');
+                $app->delete(   '{aid}',    'ApiKeyController@delete');
+
+            });
+
+            $app->group(['prefix' => 'v0/users/{id}/wallet', 'namespace' => 'App\Http\Controllers\v0\users\wallet', 'middleware' => 'auth'], function ($app) {
+
+                $app->get(  '',     'WalletController@show');//balance / TX stats
+
+                $app->group(['prefix' => 'v0/users/{id}/wallet/addresses', 'namespace' => 'App\Http\Controllers\v0\users\wallet\addresses', 'middleware' => 'auth'], function ($app) {
+
+                    $app->get(      '',             'AddressController@index');
+                    $app->post(     '',             'AddressController@create');//generate & import
+                    $app->delete(   '{addr}',       'AddressController@delete');
+                    $app->get(      '{addr}/sign',  'AddressController@sign');
 
                 });
 
-            });
+                $app->group(['prefix' => 'v0/users/{id}/wallet/transactions', 'namespace' => 'App\Http\Controllers\v0\wallet\transactions', 'middleware' => 'auth'], function ($app) {
 
-            $app->group(['prefix' => 'v0/wallet/users/{id}/api-keys', 'namespace' => 'App\Http\Controllers', 'middleware' => 'auth'], function($app) {
-
-                $app->get('', 'UserApiKeyController@index');
-                $app->post('', 'UserApiKeyController@create');
-
-                $app->group(['prefix' => 'v0/wallet/users/{id}/api-keys/{aid}', 'namespace' => 'App\Http\Controllers', 'middleware' => 'auth'], function($app) {
-
-                    $app->get('', 'UserApiKeyController@show');
-                    $app->put('', 'UserApiKeyController@update');
-                    $app->delete('', 'UserApiKeyController@delete');
+                    $app->get(  '',         'TransactionController@index');
+                    $app->post( 'send',     'TransactionController@send');
 
                 });
 
-            });
-
-            $app->group(['prefix' => 'v0/wallet/users/{id}/transactions', 'namespace' => 'App\Http\Controllers', 'middleware' => 'auth'], function($app) {
-
-                $app->get('', 'UserTransactionController@index');
-                $app->post('send', 'UserTransactionController@send');
-
-            });
-
-            $app->group(['prefix' => 'v0/wallet/users/{id}/balance', 'namespace' => 'App\Http\Controllers', 'middleware' => 'auth'], function($app) {
-    
-                $app->get('', 'UserBalanceController@show');//TODO: Resource or action...hmm
-    
             });
 
         });
         
     });
 
+});
+
+$app->get('test', function() {
+    var_dump(App\Models\v0\block\transaction\output\address\Address::find(122371)->inputs);
 });

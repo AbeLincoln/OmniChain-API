@@ -2,12 +2,13 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\User;
-use App\Models\Login;
+use App\Models\v0\Login;
+use App\Models\v0\user\User;
 use Closure;
 
 class AuthMiddleware {
 
+    //TODO: Implement validation
     public function handle($request, Closure $next) {
         $ipCheck = Login::where(['ip' => $request->ip(), 'valid' => false])->where('time', '>', date('Y-m-d H:i:s', time() - (60 * 60 * 24)))->get();
 
@@ -82,7 +83,8 @@ class AuthMiddleware {
             return response()->json(['errors' => ['no-authentication-provided']], 401);
         }
 
-        $request->setUserResolver(function() use ($user) {
+
+        $request->setUserResolver(function () use ($user) {
             return $user;
         });
 

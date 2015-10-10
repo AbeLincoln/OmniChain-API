@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Nbobtc\Command\Command;
 use Nbobtc\Http\Client;
 
 

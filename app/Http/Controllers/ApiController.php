@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Laravel\Lumen\Routing\Controller;
+
 class ApiController extends Controller {
 
     protected $statusCode = 200;
